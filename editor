@@ -1,0 +1,60 @@
+#!/bin/sh
+
+#
+# Copyright 2017 Warlock <internalmike@gmail.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+geany_open() {
+    # The "" argument forces opening a Geany project file as a regular text file instead of loading it as a project.
+    /usr/bin/geany -c "$HOME/.config/geany-editor" "" "$@"
+}
+
+if [ ".$1" = ".-a" ]; then
+    shift
+    attach=YES
+else
+    # Midnight Commander
+    attach=NO
+fi
+
+if [ -z "$DISPLAY" ]; then
+    /usr/bin/vim -- "$@"
+    return
+fi
+
+# Geany does not support the -- option.
+n=$#
+i=0
+for a in "$@"; do
+    i=$(($i+1))
+    if [ $i -gt $n ]; then
+        break
+    fi
+    if [ ".$(printf %.1s "$a")" = ".-" ]; then
+        xa="./$a"
+    else
+        xa="$a"
+    fi
+    set -- "$@" "$xa"
+done
+for i in {1..$n}; do
+    shift
+done
+
+if [ "$attach" = "YES" ]; then
+    geany_open "$@"
+else
+    (geany_open "$@" > /dev/null 2>&1 &)
+fi
