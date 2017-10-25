@@ -16,11 +16,6 @@
 # limitations under the License.
 #
 
-geany_open() {
-    # The "workaround://" argument is an invalid URI, forcing Geany to open a project file (*.geany) as a regular text file instead of loading it as a project.
-    /usr/bin/geany -i -c "$HOME/.config/geany-editor" "workaround://" "$@"
-}
-
 if [ ".$1" = ".-a" ]; then
     shift
     attach=YES
@@ -53,8 +48,9 @@ for i in {1..$n}; do
     shift
 done
 
+# The "workaround://" argument is an invalid URI, forcing Geany to open a project file (*.geany) as a regular text file instead of loading it as a project.
 if [ "$attach" = "YES" ]; then
-    geany_open "$@"
+    /usr/bin/geany -i -c "$HOME/.config/geany-editor" "workaround://" "$@"
 else
-    (geany_open "$@" > /dev/null 2>&1 &)
+    (/usr/bin/geany -c "$HOME/.config/geany-editor" "workaround://" "$@" > /dev/null 2>&1 &)
 fi
