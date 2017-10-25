@@ -17,8 +17,8 @@
 #
 
 geany_open() {
-    # The "" argument forces opening a Geany project file as a regular text file instead of loading it as a project.
-    /usr/bin/geany -c "$HOME/.config/geany-editor" "" "$@"
+    # The "workaround://" argument is an invalid URI, forcing Geany to open a project file (*.geany) as a regular text file instead of loading it as a project.
+    /usr/bin/geany -i -c "$HOME/.config/geany-editor" "workaround://" "$@"
 }
 
 if [ ".$1" = ".-a" ]; then
