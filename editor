@@ -30,8 +30,11 @@ if [ -z "$DISPLAY" ]; then
 fi
 
 if [ $# -eq 0 ]; then
-    # The "./:0:0...0" argument forces Geany to create an empty file in the current directory.
-    set -- ""
+    s=""
+    while [ -e "untitled$s" ]; do
+        s=$(($s+1))
+    done
+    set -- "untitled$s"
 fi
 
 # Guardians for '-*', '*.geany', and ':*' files.
