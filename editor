@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-if [ ".$1" = ".-a" ]; then
+if [ ".$1" = ".-3e509704-b9ba-11e7-94ed-9337b5773949" ]; then
     shift
-    attach=YES
+    mc=NO
 else
     # Midnight Commander
-    attach=NO
+    mc=YES
 fi
 
 if [ -z "$DISPLAY" ]; then
@@ -29,7 +29,12 @@ if [ -z "$DISPLAY" ]; then
     return
 fi
 
-# Geany does not support the -- option.
+if [ $# -eq 0 ]; then
+    # The "./:0:0...0" argument forces Geany to create an empty file in the current directory.
+    set -- ""
+fi
+
+# Guardians for '-*', '*.geany', and ':*' files.
 n=$#
 i=0
 for a in "$@"; do
@@ -37,20 +42,23 @@ for a in "$@"; do
     if [ $i -gt $n ]; then
         break
     fi
-    if [ ".$(printf %.1s "$a")" = ".-" ]; then
-        xa="./$a"
-    else
+    if [ ".$(printf %.1s "$a")" = "./" ]; then
         xa="$a"
+    else
+        xa="./$a"
     fi
-    set -- "$@" "$xa"
+    s=0
+    while [ -e "$xa:0:$s" ]; do
+        s=${s}0
+    done
+    set -- "$@" "$xa:0:$s"
 done
 for i in {1..$n}; do
     shift
 done
 
-# The "workaround://" argument is an invalid URI, forcing Geany to open a project file (*.geany) as a regular text file instead of loading it as a project.
-if [ "$attach" = "YES" ]; then
-    /usr/bin/geany -i -c "$HOME/.config/geany-editor" "workaround://" "$@"
+if [ "$mc" = "NO" ]; then
+    /usr/bin/geany -i -c "$HOME/.config/geany-editor" "$@"
 else
-    (/usr/bin/geany -c "$HOME/.config/geany-editor" "workaround://" "$@" > /dev/null 2>&1 &)
+    (/usr/bin/geany -c "$HOME/.config/geany-editor" "$@" > /dev/null 2>&1 &)
 fi
